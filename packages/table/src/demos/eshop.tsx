@@ -652,8 +652,14 @@ export default () => {
                     validator: (_, value) => {
                       if (!value) return Promise.resolve();
                       const [month, year] = value.split('/');
-                      const expiry = new Date(2000 + parseInt(year), parseInt(month));
+                      // Calculate expiry date: last day of the expiry month
+                      // Note: For demo purposes, assumes all 2-digit years are in 2000-2099 range
+                      const expiryYear = 2000 + parseInt(year);
+                      const expiryMonth = parseInt(month) - 1; // Date months are 0-indexed
+                      // Using day 0 of next month gives last day of current month
+                      const expiry = new Date(expiryYear, expiryMonth + 1, 0);
                       const now = new Date();
+                      now.setHours(0, 0, 0, 0); // Reset to start of day
                       if (expiry < now) {
                         return Promise.reject(new Error('Card has expired'));
                       }
