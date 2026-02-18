@@ -6,11 +6,10 @@ import {
   ProTable,
   ProForm,
   ProFormText,
-  ProFormDigit,
   ProFormSelect,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { Button, message, Space, Tag, Badge, Statistic, Drawer, List, Image } from 'antd';
+import { Button, message, Space, Tag, Badge, Statistic, Drawer, List } from 'antd';
 import { useRef, useState } from 'react';
 
 // Product data type for PC notebooks
@@ -174,10 +173,8 @@ export default () => {
     if (existingItem) {
       setCart(
         cart.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
+          item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item,
+        ),
       );
       message.success(`Added another ${product.name} to cart`);
     } else {
@@ -294,9 +291,7 @@ export default () => {
       dataIndex: 'rating',
       search: false,
       width: 100,
-      render: (_, record) => (
-        <Tag color="gold">⭐ {record.rating}</Tag>
-      ),
+      render: (_, record) => <Tag color="gold">⭐ {record.rating}</Tag>,
     },
     {
       title: 'Action',
@@ -338,11 +333,7 @@ export default () => {
       }
       extra={
         <Space>
-          <Statistic
-            title="Products"
-            value={notebookData.length}
-            prefix={<LaptopOutlined />}
-          />
+          <Statistic title="Products" value={notebookData.length} prefix={<LaptopOutlined />} />
           <Badge count={cart.length} showZero>
             <Button
               type="primary"
@@ -632,7 +623,13 @@ export default () => {
               name="cardNumber"
               label="Card Number"
               placeholder="1234 5678 9012 3456"
-              rules={[{ required: true, message: 'Please enter card number' }]}
+              rules={[
+                { required: true, message: 'Please enter card number' },
+                {
+                  pattern: /^[0-9]{13,19}$/,
+                  message: 'Please enter a valid card number (13-19 digits)',
+                },
+              ]}
             />
             <ProFormText
               name="cardHolder"
@@ -645,14 +642,38 @@ export default () => {
                 name="expiryDate"
                 label="Expiry Date"
                 placeholder="MM/YY"
-                rules={[{ required: true, message: 'Required' }]}
+                rules={[
+                  { required: true, message: 'Required' },
+                  {
+                    pattern: /^(0[1-9]|1[0-2])\/([0-9]{2})$/,
+                    message: 'Please enter a valid date (MM/YY)',
+                  },
+                  {
+                    validator: (_, value) => {
+                      if (!value) return Promise.resolve();
+                      const [month, year] = value.split('/');
+                      const expiry = new Date(2000 + parseInt(year), parseInt(month));
+                      const now = new Date();
+                      if (expiry < now) {
+                        return Promise.reject(new Error('Card has expired'));
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
                 width="md"
               />
               <ProFormText
                 name="cvv"
                 label="CVV"
                 placeholder="123"
-                rules={[{ required: true, message: 'Required' }]}
+                rules={[
+                  { required: true, message: 'Required' },
+                  {
+                    pattern: /^[0-9]{3,4}$/,
+                    message: 'Please enter a valid CVV (3-4 digits)',
+                  },
+                ]}
                 width="sm"
               />
             </Space.Compact>

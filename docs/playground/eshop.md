@@ -5,9 +5,9 @@ nav:
   path: /playground
 ---
 
-# eShop - PC笔记本电脑商城
+# eShop - PC 笔记本电脑商城
 
-这是一个使用 ProComponents 构建的完整电子商务示例应用，展示了如何创建一个销售PC笔记本电脑的在线商店。
+这是一个使用 ProComponents 构建的完整电子商务示例应用，展示了如何创建一个销售 PC 笔记本电脑的在线商店。
 
 ## 功能特性
 
